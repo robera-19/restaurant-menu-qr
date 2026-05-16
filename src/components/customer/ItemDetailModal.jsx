@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Heart, Share2, AlertCircle, CheckCircle, Clock, Flame, Star, Minus, Plus, ChevronLeft, ThumbsUp } from 'lucide-react';
+import { Heart, Share2, AlertCircle, CheckCircle, Clock, Flame, Star, ChevronLeft, ThumbsUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
 import RatingModal from './RatingModal';
 
-export default function ItemDetailModal({ item, onClose, onAddToCart, onRatingSubmit }) {
-  const [quantity, setQuantity] = useState(1);
+export default function ItemDetailModal({ item, onClose, onRatingSubmit }) {
   const [specialInstructions, setSpecialInstructions] = useState('');
   const [isLiked, setIsLiked] = useState(false);
   const [showRatingModal, setShowRatingModal] = useState(false);
@@ -21,25 +20,10 @@ export default function ItemDetailModal({ item, onClose, onAddToCart, onRatingSu
 
   const allergens = item.allergens || [];
 
-  const handleAddToCart = () => {
-    const cartItem = {
-      ...item,
-      quantity,
-      specialInstructions,
-      totalPrice: item.price * quantity
-    };
-    onAddToCart(cartItem);
-    toast.success(`${quantity}x ${item.name} added to cart!`, {
-      duration: 2000,
-      icon: '🛒'
-    });
-  };
-
   const handleRatingSubmit = (ratingData) => {
     if (onRatingSubmit) {
       onRatingSubmit(ratingData);
     }
-    // Update local rating display
     toast.success('Rating submitted successfully!');
   };
 
@@ -49,7 +33,7 @@ export default function ItemDetailModal({ item, onClose, onAddToCart, onRatingSu
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-black/75 z-50 flex items-end md:items-center justify-center"
+        className="fixed inset-0 bg-black/50 z-50 flex items-end md:items-center justify-center"
         onClick={onClose}
       >
         <motion.div
@@ -79,7 +63,7 @@ export default function ItemDetailModal({ item, onClose, onAddToCart, onRatingSu
               <div className="flex justify-between items-start gap-3">
                 <h2 className="text-xl font-bold text-gray-900 flex-1">{item.name}</h2>
                 <div className="text-right">
-                  <div className="text-2xl font-bold text-orange-600">ETB {item.price.toLocaleString()}</div>
+                  <div className="text-2xl font-bold text-blue-600">ETB {item.price.toLocaleString()}</div>
                   {item.original_price && <div className="text-xs text-gray-400 line-through">ETB {item.original_price.toLocaleString()}</div>}
                 </div>
               </div>
@@ -150,19 +134,23 @@ export default function ItemDetailModal({ item, onClose, onAddToCart, onRatingSu
 
             <div className="mb-5">
               <h3 className="text-sm font-semibold text-gray-900 mb-2">Special Instructions</h3>
-              <textarea className="input text-sm" rows="2" placeholder="Any special requests? (e.g., no onions, extra sauce)" value={specialInstructions} onChange={(e) => setSpecialInstructions(e.target.value)} />
+              <textarea 
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base bg-white text-gray-900" 
+                rows="2" 
+                placeholder="Any special requests? (e.g., no onions, extra sauce)" 
+                value={specialInstructions} 
+                onChange={(e) => setSpecialInstructions(e.target.value)} 
+              />
             </div>
 
-            <div className="flex items-center justify-between gap-4 pt-3 border-t">
-              <div className="flex items-center gap-3">
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center"><Minus size={18} /></button>
-                <span className="text-lg font-semibold w-8 text-center">{quantity}</span>
-                <button onClick={() => setQuantity(quantity + 1)} className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center"><Plus size={18} /></button>
-              </div>
-              <button onClick={handleAddToCart} disabled={!item.is_available} className="flex-1 btn-primary py-3 text-sm disabled:opacity-50">Add to Cart • ETB {(item.price * quantity).toLocaleString()}</button>
+            <div className="pt-3 border-t">
+              <button 
+                onClick={() => { navigator.share?.({ title: item.name, text: item.description, url: window.location.href }); }} 
+                className="mt-4 text-gray-500 text-xs inline-flex items-center gap-1 w-full justify-center py-2"
+              >
+                <Share2 size={14} /> Share this item
+              </button>
             </div>
-
-            <button onClick={() => { navigator.share?.({ title: item.name, text: item.description, url: window.location.href }); }} className="mt-4 text-gray-500 text-xs inline-flex items-center gap-1 w-full justify-center py-2"><Share2 size={14} /> Share this item</button>
           </div>
         </motion.div>
       </motion.div>

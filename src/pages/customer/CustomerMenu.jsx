@@ -27,12 +27,20 @@ export default function CustomerMenu() {
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [headerHeight, setHeaderHeight] = useState(0);
   const headerRef = useRef(null);
-  const [ratings, setRatings] = useState({});
 
   useEffect(() => {
     if (headerRef.current) {
       setHeaderHeight(headerRef.current.offsetHeight);
     }
+    
+    const handleResize = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.offsetHeight);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const filteredItems = items?.filter(item => {
@@ -74,16 +82,7 @@ export default function CustomerMenu() {
   };
 
   const handleRatingSubmit = (ratingData) => {
-    // Store rating locally
-    setRatings(prev => ({
-      ...prev,
-      [ratingData.menu_item_id]: ratingData
-    }));
-    
-    // Here you would typically send to backend API
     console.log('Rating submitted:', ratingData);
-    
-    // Show success message
     toast.success(`Thank you for rating ${ratingData.rating_value} stars!`);
   };
 

@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
-import { X, Headphones, Phone, Globe, ChevronRight, LogOut, User, Settings, ArrowLeft, Star, History, CreditCard, HelpCircle, Bell, Home, ShoppingBag, Heart } from 'lucide-react';
+import { Headphones, Phone, Globe, ChevronRight, LogOut, User, ArrowLeft, Heart, CreditCard, Bell, Home, ShoppingBag, Shield } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
   const [activeSubMenu, setActiveSubMenu] = useState(null);
-  const [activeNestedMenu, setActiveNestedMenu] = useState(null);
 
   const mainMenuItems = [
-    { id: 'home', icon: Home, label: 'Home', color: 'text-blue-600', action: () => onClose() },
+    { id: 'home', icon: Home, label: 'Home', color: 'text-blue-600', action: () => window.location.href = '/' },
     { id: 'profile', icon: User, label: 'My Profile', color: 'text-blue-600' },
     { id: 'orders', icon: ShoppingBag, label: 'My Orders', color: 'text-green-600' },
     { id: 'favorites', icon: Heart, label: 'Favorites', color: 'text-red-600' },
     { id: 'payments', icon: CreditCard, label: 'Payment Methods', color: 'text-purple-600' },
     { id: 'notifications', icon: Bell, label: 'Notifications', color: 'text-pink-600' },
+    { id: 'admin', icon: Shield, label: 'Admin Dashboard', color: 'text-purple-600', action: () => window.location.href = '/admin' },
     { id: 'language', icon: Globe, label: 'Language', color: 'text-indigo-600', action: onLanguageClick },
     { id: 'support', icon: Headphones, label: 'Support', color: 'text-orange-600', action: onSupportClick },
     { id: 'contact', icon: Phone, label: 'Contact', color: 'text-red-600', action: onSupportClick },
@@ -36,16 +36,11 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
   };
 
   const handleBack = () => {
-    if (activeNestedMenu) {
-      setActiveNestedMenu(null);
-    } else {
-      setActiveSubMenu(null);
-    }
+    setActiveSubMenu(null);
   };
 
   const renderMainMenu = () => (
     <>
-      {/* User Profile Section */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-6 text-white">
         <div className="flex items-center gap-3 mb-4">
           <motion.div 
@@ -69,7 +64,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
         </motion.button>
       </div>
 
-      {/* Menu Items */}
       <div className="p-4 space-y-1">
         <div className="px-3 py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
           Main Menu
@@ -105,7 +99,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
         </motion.button>
       </div>
       
-      {/* Footer */}
       <div className="border-t p-4">
         <p className="text-xs text-center text-gray-400">Version 1.0.0</p>
       </div>
@@ -114,7 +107,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
 
   const renderProfileMenu = () => (
     <>
-      {/* Back Button Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
         <div className="flex items-center gap-3">
           <motion.button
@@ -129,7 +121,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
         </div>
       </div>
 
-      {/* Profile Content */}
       <div className="p-4 space-y-4">
         <div className="flex flex-col items-center py-6">
           <motion.div 
@@ -171,7 +162,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
 
   const renderOrdersMenu = () => (
     <>
-      {/* Back Button Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
         <div className="flex items-center gap-3">
           <motion.button
@@ -186,7 +176,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
         </div>
       </div>
 
-      {/* Orders Content */}
       <div className="p-4 space-y-3">
         <div className="text-center py-12">
           <div className="text-6xl mb-3">📦</div>
@@ -199,7 +188,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
 
   const renderFavoritesMenu = () => (
     <>
-      {/* Back Button Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
         <div className="flex items-center gap-3">
           <motion.button
@@ -214,7 +202,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
         </div>
       </div>
 
-      {/* Favorites Content */}
       <div className="p-4 space-y-3">
         <div className="text-center py-12">
           <div className="text-6xl mb-3">❤️</div>
@@ -227,7 +214,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
 
   const renderPaymentsMenu = () => (
     <>
-      {/* Back Button Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
         <div className="flex items-center gap-3">
           <motion.button
@@ -242,7 +228,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
         </div>
       </div>
 
-      {/* Payments Content */}
       <div className="p-4 space-y-3">
         <div className="text-center py-12">
           <div className="text-6xl mb-3">💳</div>
@@ -255,7 +240,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
 
   const renderNotificationsMenu = () => (
     <>
-      {/* Back Button Header */}
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
         <div className="flex items-center gap-3">
           <motion.button
@@ -270,7 +254,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
         </div>
       </div>
 
-      {/* Notifications Content */}
       <div className="p-4 space-y-3">
         <div className="text-center py-12">
           <div className="text-6xl mb-3">🔔</div>

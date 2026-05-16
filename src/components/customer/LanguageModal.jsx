@@ -23,13 +23,13 @@ const LanguageModal = ({ isOpen, onClose, currentLanguage, onSelectLanguage }) =
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl max-w-md w-full overflow-y-auto"
+            className="bg-white dark:bg-gray-900 rounded-2xl max-w-md w-full overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="sticky top-0 bg-white p-4 border-b rounded-t-2xl flex justify-between items-center">
-              <h2 className="text-xl font-bold">Select Language</h2>
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <X size={20} />
+            <div className="sticky top-0 bg-white dark:bg-gray-900 p-4 border-b dark:border-gray-700 rounded-t-2xl flex justify-between items-center">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Select Language</h2>
+              <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+                <X size={20} className="text-gray-500 dark:text-gray-400" />
               </button>
             </div>
             <div className="p-4 space-y-2">
@@ -42,15 +42,15 @@ const LanguageModal = ({ isOpen, onClose, currentLanguage, onSelectLanguage }) =
                   }}
                   className={`w-full flex items-center justify-between p-4 rounded-xl transition-all ${
                     currentLanguage === lang.code
-                      ? 'bg-blue-50 border-2 border-blue-500'
-                      : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                      ? 'bg-blue-50 dark:bg-blue-900/50 border-2 border-blue-500'
+                      : 'bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border-2 border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-2xl">{lang.flag}</span>
                     <div className="text-left">
-                      <p className="font-semibold text-gray-900">{lang.name}</p>
-                      <p className="text-sm text-gray-500">{lang.nativeName}</p>
+                      <p className="font-semibold text-gray-900 dark:text-white">{lang.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{lang.nativeName}</p>
                     </div>
                   </div>
                   {currentLanguage === lang.code && (

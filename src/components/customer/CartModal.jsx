@@ -4,7 +4,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const CartModal = ({ isOpen, onClose, cart, onUpdateQuantity, onRemoveItem }) => {
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const updateQuantity = (id, delta) => {
     const newQuantity = delta;
@@ -34,9 +33,9 @@ const CartModal = ({ isOpen, onClose, cart, onUpdateQuantity, onRemoveItem }) =>
             onClick={(e) => e.stopPropagation()}
           >
             <div className="sticky top-0 bg-white p-4 border-b rounded-t-3xl flex justify-between items-center">
-              <h2 className="text-lg font-bold">Your Cart</h2>
-              <button onClick={onClose} className="p-2">
-                <X size={20} />
+              <h2 className="text-lg font-bold text-gray-900">Your Cart</h2>
+              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+                <X size={20} className="text-gray-500" />
               </button>
             </div>
             <div className="p-4 space-y-3 pb-20">
@@ -55,18 +54,18 @@ const CartModal = ({ isOpen, onClose, cart, onUpdateQuantity, onRemoveItem }) =>
                       className="flex justify-between items-start gap-3 pb-3 border-b"
                     >
                       <div className="flex-1">
-                        <p className="font-medium text-sm">{item.name}</p>
+                        <p className="font-medium text-sm text-gray-900">{item.name}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm"
+                            className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm hover:bg-gray-200 transition-colors"
                           >
                             -
                           </button>
-                          <span className="text-sm font-medium">{item.quantity}</span>
+                          <span className="text-sm font-medium text-gray-700">{item.quantity}</span>
                           <button
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm"
+                            className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-sm hover:bg-gray-200 transition-colors"
                           >
                             +
                           </button>
@@ -76,10 +75,10 @@ const CartModal = ({ isOpen, onClose, cart, onUpdateQuantity, onRemoveItem }) =>
                         )}
                       </div>
                       <div className="text-right">
-                        <p className="font-semibold text-sm">ETB {(item.price * item.quantity).toLocaleString()}</p>
+                        <p className="font-semibold text-sm text-gray-900">ETB {(item.price * item.quantity).toLocaleString()}</p>
                         <button
                           onClick={() => onRemoveItem(item.id)}
-                          className="text-red-500 text-xs mt-1"
+                          className="text-red-500 text-xs mt-1 hover:text-red-600 transition-colors"
                         >
                           Remove
                         </button>
@@ -88,7 +87,7 @@ const CartModal = ({ isOpen, onClose, cart, onUpdateQuantity, onRemoveItem }) =>
                   ))}
                   <div className="pt-4 border-t">
                     <div className="flex justify-between items-center mb-4">
-                      <span className="font-bold text-base">Total</span>
+                      <span className="font-bold text-base text-gray-900">Total</span>
                       <span className="font-bold text-xl text-blue-600">ETB {cartTotal.toLocaleString()}</span>
                     </div>
                     <motion.button

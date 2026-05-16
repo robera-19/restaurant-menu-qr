@@ -32,7 +32,6 @@ const MenuItemCard = ({ item, index, onClick }) => {
       onClick={() => onClick(item)}
       className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-lg cursor-pointer transition-all duration-200 hover:scale-105 transform"
     >
-      {/* Image Section */}
       <div className="relative">
         <img 
           src={item.image_url} 
@@ -41,14 +40,12 @@ const MenuItemCard = ({ item, index, onClick }) => {
           loading="lazy"
         />
         
-        {/* Sold Out Badge */}
         {!item.is_available && (
           <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
             <span className="text-white text-xs font-bold bg-red-600 px-2 py-1 rounded">Sold Out</span>
           </div>
         )}
         
-        {/* Favorite/Heart Button */}
         <button
           onClick={handleLike}
           className="absolute top-2 right-2 p-1.5 rounded-full bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-200 shadow-md"
@@ -63,7 +60,6 @@ const MenuItemCard = ({ item, index, onClick }) => {
           />
         </button>
         
-        {/* Spicy Level Badge */}
         {item.spicy_level > 0 && (
           <div className="absolute top-2 left-2 bg-orange-500 rounded-full p-1 shadow-md">
             <Flame size={12} className="text-white" />
@@ -71,18 +67,14 @@ const MenuItemCard = ({ item, index, onClick }) => {
         )}
       </div>
       
-      {/* Content Section */}
       <div className="p-3">
-        {/* Food Name */}
         <h3 className="font-semibold text-gray-800 text-sm sm:text-base line-clamp-1 mb-2">
           {item.name}
         </h3>
         
-        {/* Price and Rating Row */}
         <div className="flex justify-between items-center">
-          {/* Price */}
           <div>
-            <span className="text-base sm:text-lg font-bold text-orange-600">
+            <span className="text-base sm:text-lg font-bold text-blue-600">
               ETB {item.price.toLocaleString()}
             </span>
             {item.original_price && (
@@ -92,7 +84,6 @@ const MenuItemCard = ({ item, index, onClick }) => {
             )}
           </div>
           
-          {/* Rating Stars */}
           <div className="flex items-center gap-1">
             {item.rating && (
               <div className="flex items-center gap-0.5">

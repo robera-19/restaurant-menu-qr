@@ -20,8 +20,6 @@ const RatingModal = ({ isOpen, onClose, item, onSubmitRating }) => {
     }
     
     setIsSubmitting(true);
-    
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
     const ratingData = {
@@ -36,7 +34,6 @@ const RatingModal = ({ isOpen, onClose, item, onSubmitRating }) => {
     onSubmitRating(ratingData);
     toast.success('Thank you for your rating!');
     
-    // Reset form
     setRating(0);
     setComment('');
     setCustomerName('');
@@ -59,25 +56,22 @@ const RatingModal = ({ isOpen, onClose, item, onSubmitRating }) => {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
+            className="bg-white dark:bg-gray-900 rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="sticky top-0 bg-white p-4 border-b rounded-t-2xl flex justify-between items-center">
+            <div className="sticky top-0 bg-white dark:bg-gray-900 p-4 border-b dark:border-gray-700 rounded-t-2xl flex justify-between items-center">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Rate This Item</h2>
-                <p className="text-sm text-gray-500 mt-1">{item.name}</p>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Rate This Item</h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{item.name}</p>
               </div>
-              <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <X size={20} />
+              <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors">
+                <X size={20} className="text-gray-500 dark:text-gray-400" />
               </button>
             </div>
 
-            {/* Rating Form */}
             <form onSubmit={handleSubmit} className="p-6 space-y-5">
-              {/* Star Rating */}
               <div className="text-center">
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                   Your Rating *
                 </label>
                 <div className="flex justify-center gap-2">
@@ -95,55 +89,52 @@ const RatingModal = ({ isOpen, onClose, item, onSubmitRating }) => {
                         className={`${
                           (hoverRating || rating) >= star
                             ? 'fill-yellow-400 text-yellow-400'
-                            : 'text-gray-300'
+                            : 'text-gray-300 dark:text-gray-600'
                         } transition-colors duration-150`}
                       />
                     </button>
                   ))}
                 </div>
                 {rating > 0 && (
-                  <p className="text-sm text-green-600 mt-2">
+                  <p className="text-sm text-green-600 dark:text-green-400 mt-2">
                     You selected {rating} star{rating !== 1 ? 's' : ''}
                   </p>
                 )}
               </div>
 
-              {/* Customer Name (Optional) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Your Name (Optional)
                 </label>
                 <input
                   type="text"
-                  className="input"
+                  className="input w-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
                   placeholder="e.g., John Doe"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                 />
-                <p className="text-xs text-gray-500 mt-1">This will help us improve</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">This will help us improve</p>
               </div>
 
-              {/* Table Number (Optional) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Table Number (Optional)
                 </label>
                 <input
                   type="text"
-                  className="input"
+                  className="input w-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
                   placeholder="e.g., Table 5"
                   value={tableNumber}
                   onChange={(e) => setTableNumber(e.target.value)}
                 />
               </div>
 
-              {/* Comment (Optional) */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Your Feedback (Optional)
                 </label>
                 <textarea
-                  className="input"
+                  className="input w-full bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white"
                   rows="4"
                   placeholder="Tell us what you think about this dish..."
                   value={comment}
@@ -151,7 +142,6 @@ const RatingModal = ({ isOpen, onClose, item, onSubmitRating }) => {
                 />
               </div>
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting || rating === 0}
