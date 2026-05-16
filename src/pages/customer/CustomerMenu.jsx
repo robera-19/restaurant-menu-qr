@@ -12,6 +12,7 @@ import SupportModal from '../../components/customer/SupportModal';
 import CartModal from '../../components/customer/CartModal';
 import CartButton from '../../components/customer/CartButton';
 import Footer from '../../components/customer/Footer';
+import toast from 'react-hot-toast';
 
 export default function CustomerMenu() {
   const { items, categories, loading } = useMenu();
@@ -26,6 +27,7 @@ export default function CustomerMenu() {
   const [currentLanguage, setCurrentLanguage] = useState('en');
   const [headerHeight, setHeaderHeight] = useState(0);
   const headerRef = useRef(null);
+  const [ratings, setRatings] = useState({});
 
   useEffect(() => {
     if (headerRef.current) {
@@ -69,6 +71,20 @@ export default function CustomerMenu() {
   const handleLanguageChange = (langCode) => {
     setCurrentLanguage(langCode);
     console.log('Language changed to:', langCode);
+  };
+
+  const handleRatingSubmit = (ratingData) => {
+    // Store rating locally
+    setRatings(prev => ({
+      ...prev,
+      [ratingData.menu_item_id]: ratingData
+    }));
+    
+    // Here you would typically send to backend API
+    console.log('Rating submitted:', ratingData);
+    
+    // Show success message
+    toast.success(`Thank you for rating ${ratingData.rating_value} stars!`);
   };
 
   return (
@@ -155,6 +171,7 @@ export default function CustomerMenu() {
             item={selectedItem}
             onClose={() => setSelectedItem(null)}
             onAddToCart={handleAddToCart}
+            onRatingSubmit={handleRatingSubmit}
           />
         )}
       </AnimatePresence>
