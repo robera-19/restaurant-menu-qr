@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Headphones, Phone, Globe, ChevronRight, LogOut, User, ArrowLeft, Heart, CreditCard, Bell, Home, ShoppingBag, Shield } from 'lucide-react';
+import { Headphones, Phone, Globe, ChevronRight, LogOut, User, ArrowLeft, Heart, Bell, Home, Shield, Info, Settings } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
@@ -8,14 +8,14 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
   const mainMenuItems = [
     { id: 'home', icon: Home, label: 'Home', color: 'text-blue-600', action: () => window.location.href = '/' },
     { id: 'profile', icon: User, label: 'My Profile', color: 'text-blue-600' },
-    { id: 'orders', icon: ShoppingBag, label: 'My Orders', color: 'text-green-600' },
     { id: 'favorites', icon: Heart, label: 'Favorites', color: 'text-red-600' },
-    { id: 'payments', icon: CreditCard, label: 'Payment Methods', color: 'text-purple-600' },
     { id: 'notifications', icon: Bell, label: 'Notifications', color: 'text-pink-600' },
     { id: 'admin', icon: Shield, label: 'Admin Dashboard', color: 'text-purple-600', action: () => window.location.href = '/admin' },
     { id: 'language', icon: Globe, label: 'Language', color: 'text-indigo-600', action: onLanguageClick },
     { id: 'support', icon: Headphones, label: 'Support', color: 'text-orange-600', action: onSupportClick },
     { id: 'contact', icon: Phone, label: 'Contact', color: 'text-red-600', action: onSupportClick },
+    { id: 'about', icon: Info, label: 'About Us', color: 'text-teal-600' },
+    { id: 'settings', icon: Settings, label: 'Settings', color: 'text-gray-600' },
   ];
 
   const handleMenuClick = (item) => {
@@ -24,14 +24,14 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
       onClose();
     } else if (item.id === 'profile') {
       setActiveSubMenu('profile');
-    } else if (item.id === 'orders') {
-      setActiveSubMenu('orders');
     } else if (item.id === 'favorites') {
       setActiveSubMenu('favorites');
-    } else if (item.id === 'payments') {
-      setActiveSubMenu('payments');
     } else if (item.id === 'notifications') {
       setActiveSubMenu('notifications');
+    } else if (item.id === 'about') {
+      setActiveSubMenu('about');
+    } else if (item.id === 'settings') {
+      setActiveSubMenu('settings');
     }
   };
 
@@ -160,32 +160,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
     </>
   );
 
-  const renderOrdersMenu = () => (
-    <>
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
-        <div className="flex items-center gap-3">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleBack}
-            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-          >
-            <ArrowLeft size={20} />
-          </motion.button>
-          <h2 className="text-lg font-semibold">My Orders</h2>
-        </div>
-      </div>
-
-      <div className="p-4 space-y-3">
-        <div className="text-center py-12">
-          <div className="text-6xl mb-3">📦</div>
-          <p className="text-gray-500">No orders yet</p>
-          <p className="text-sm text-gray-400 mt-1">Your orders will appear here</p>
-        </div>
-      </div>
-    </>
-  );
-
   const renderFavoritesMenu = () => (
     <>
       <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
@@ -207,32 +181,6 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
           <div className="text-6xl mb-3">❤️</div>
           <p className="text-gray-500">No favorites yet</p>
           <p className="text-sm text-gray-400 mt-1">Save your favorite items here</p>
-        </div>
-      </div>
-    </>
-  );
-
-  const renderPaymentsMenu = () => (
-    <>
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
-        <div className="flex items-center gap-3">
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            onClick={handleBack}
-            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-          >
-            <ArrowLeft size={20} />
-          </motion.button>
-          <h2 className="text-lg font-semibold">Payment Methods</h2>
-        </div>
-      </div>
-
-      <div className="p-4 space-y-3">
-        <div className="text-center py-12">
-          <div className="text-6xl mb-3">💳</div>
-          <p className="text-gray-500">No payment methods added</p>
-          <p className="text-sm text-gray-400 mt-1">Add your first payment method</p>
         </div>
       </div>
     </>
@@ -264,6 +212,104 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
     </>
   );
 
+  const renderAboutMenu = () => (
+    <>
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
+        <div className="flex items-center gap-3">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleBack}
+            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </motion.button>
+          <h2 className="text-lg font-semibold">About Us</h2>
+        </div>
+      </div>
+
+      <div className="p-6 space-y-4">
+        <div className="text-center">
+          <div className="text-6xl mb-3">🍽️</div>
+          <h3 className="text-xl font-bold text-gray-800">Ethio Buna</h3>
+          <p className="text-gray-500 text-sm mt-1">Restaurant & Cafe</p>
+        </div>
+        <div className="border-t pt-4">
+          <p className="text-gray-600 text-sm leading-relaxed">
+            Ethio Buna offers authentic Ethiopian cuisine with a modern twist. 
+            We serve freshly prepared dishes made from the finest ingredients.
+          </p>
+          <p className="text-gray-600 text-sm leading-relaxed mt-3">
+            Our mission is to provide an exceptional dining experience with 
+            traditional flavors and warm hospitality.
+          </p>
+        </div>
+      </div>
+    </>
+  );
+
+  const renderSettingsMenu = () => (
+    <>
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 p-4 text-white">
+        <div className="flex items-center gap-3">
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={handleBack}
+            className="p-2 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+          >
+            <ArrowLeft size={20} />
+          </motion.button>
+          <h2 className="text-lg font-semibold">Settings</h2>
+        </div>
+      </div>
+
+      <div className="p-4 space-y-4">
+        <div className="bg-gray-50 rounded-lg p-3 flex justify-between items-center">
+          <div>
+            <p className="font-medium text-gray-800">Language</p>
+            <p className="text-xs text-gray-500">Change app language</p>
+          </div>
+          <button 
+            onClick={() => {
+              onLanguageClick();
+              setActiveSubMenu(null);
+            }}
+            className="text-blue-600 text-sm"
+          >
+            Change
+          </button>
+        </div>
+        
+        <div className="bg-gray-50 rounded-lg p-3 flex justify-between items-center">
+          <div>
+            <p className="font-medium text-gray-800">Notifications</p>
+            <p className="text-xs text-gray-500">Enable push notifications</p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" className="sr-only peer" />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+          </label>
+        </div>
+        
+        <div className="bg-gray-50 rounded-lg p-3">
+          <p className="font-medium text-gray-800">Version</p>
+          <p className="text-xs text-gray-500">1.0.0</p>
+        </div>
+        
+        <div className="bg-gray-50 rounded-lg p-3">
+          <p className="font-medium text-gray-800">Privacy Policy</p>
+          <p className="text-xs text-gray-500">View our privacy policy</p>
+        </div>
+        
+        <div className="bg-gray-50 rounded-lg p-3">
+          <p className="font-medium text-gray-800">Terms of Service</p>
+          <p className="text-xs text-gray-500">View our terms</p>
+        </div>
+      </div>
+    </>
+  );
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -284,10 +330,10 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
           >
             {activeSubMenu === null && renderMainMenu()}
             {activeSubMenu === 'profile' && renderProfileMenu()}
-            {activeSubMenu === 'orders' && renderOrdersMenu()}
             {activeSubMenu === 'favorites' && renderFavoritesMenu()}
-            {activeSubMenu === 'payments' && renderPaymentsMenu()}
             {activeSubMenu === 'notifications' && renderNotificationsMenu()}
+            {activeSubMenu === 'about' && renderAboutMenu()}
+            {activeSubMenu === 'settings' && renderSettingsMenu()}
           </motion.div>
         </motion.div>
       )}
