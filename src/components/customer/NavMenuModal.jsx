@@ -1,22 +1,44 @@
 import React, { useState } from 'react';
-import { Headphones, Phone, Globe, ChevronRight, LogOut, User, ArrowLeft, Heart, Bell, Home, Shield, Info, Settings } from 'lucide-react';
+import { Headphones, Phone, Globe, ChevronRight, LogOut, User, ArrowLeft, Heart, Bell, Home, Shield, Info, Settings, LogIn } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
   const [activeSubMenu, setActiveSubMenu] = useState(null);
+  const { user, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    onClose();
+    navigate('/');
+  };
+
+  const handleLogin = () => {
+    onClose();
+    navigate('/login');
+  };
 
   const mainMenuItems = [
-    { id: 'home', icon: Home, label: 'Home', color: 'text-blue-600', action: () => window.location.href = '/' },
+    { id: 'home', icon: Home, label: 'Home', color: 'text-blue-600', action: () => { window.location.href = '/'; onClose(); } },
     { id: 'profile', icon: User, label: 'My Profile', color: 'text-blue-600' },
     { id: 'favorites', icon: Heart, label: 'Favorites', color: 'text-red-600' },
     { id: 'notifications', icon: Bell, label: 'Notifications', color: 'text-pink-600' },
-    { id: 'admin', icon: Shield, label: 'Admin Dashboard', color: 'text-purple-600', action: () => window.location.href = '/admin' },
+  ];
+
+  // Add admin dashboard only if authenticated
+  if (isAuthenticated) {
+    mainMenuItems.push({ id: 'admin', icon: Shield, label: 'Admin Dashboard', color: 'text-purple-600', action: () => { window.location.href = '/admin'; onClose(); } });
+  }
+
+  mainMenuItems.push(
     { id: 'language', icon: Globe, label: 'Language', color: 'text-indigo-600', action: onLanguageClick },
     { id: 'support', icon: Headphones, label: 'Support', color: 'text-orange-600', action: onSupportClick },
     { id: 'contact', icon: Phone, label: 'Contact', color: 'text-red-600', action: onSupportClick },
     { id: 'about', icon: Info, label: 'About Us', color: 'text-teal-600' },
-    { id: 'settings', icon: Settings, label: 'Settings', color: 'text-gray-600' },
-  ];
+    { id: 'settings', icon: Settings, label: 'Settings', color: 'text-gray-600' }
+  );
 
   const handleMenuClick = (item) => {
     if (item.action) {
@@ -51,17 +73,20 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
             <span className="text-3xl">👤</span>
           </motion.div>
           <div>
-            <p className="font-semibold text-lg">Guest User</p>
-            <p className="text-xs text-blue-100">Welcome to Ethio Buna</p>
+            <p className="font-semibold text-lg">{user?.name || 'Guest User'}</p>
+            <p className="text-xs text-blue-100">{user ? `Welcome back!` : 'Welcome to Ethio Buna'}</p>
           </div>
         </div>
-        <motion.button 
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full bg-white/20 rounded-lg py-2 text-sm font-medium hover:bg-white/30 transition-colors"
-        >
-          Sign In / Register
-        </motion.button>
+        {!isAuthenticated && (
+          <motion.button 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleLogin}
+            className="w-full bg-white/20 rounded-lg py-2 text-sm font-medium hover:bg-white/30 transition-colors flex items-center justify-center gap-2"
+          >
+            <LogIn size={16} /> Sign In / Register
+          </motion.button>
+        )}
       </div>
 
       <div className="p-4 space-y-1">
@@ -88,15 +113,29 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
         
         <div className="border-t my-2"></div>
         
-        <motion.button
-          whileHover={{ x: 10 }}
-          whileTap={{ scale: 0.98 }}
-          className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200 group text-red-600"
-        >
-          <LogOut size={20} />
-          <span className="flex-1 text-left">Logout</span>
-          <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-        </motion.button>
+        {isAuthenticated ? (
+          <motion.button
+            whileHover={{ x: 10 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200 group text-red-600"
+          >
+            <LogOut size={20} />
+            <span className="flex-1 text-left">Logout</span>
+            <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </motion.button>
+        ) : (
+          <motion.button
+            whileHover={{ x: 10 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleLogin}
+            className="w-full flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 transition-all duration-200 group text-blue-600"
+          >
+            <LogIn size={20} />
+            <span className="flex-1 text-left">Login / Register</span>
+            <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </motion.button>
+        )}
       </div>
       
       <div className="border-t p-4">
@@ -130,32 +169,38 @@ const NavMenuModal = ({ isOpen, onClose, onSupportClick, onLanguageClick }) => {
           >
             <span className="text-4xl">👤</span>
           </motion.div>
-          <h3 className="text-xl font-bold text-gray-900">Guest User</h3>
-          <p className="text-gray-500 text-sm">Member since 2024</p>
+          <h3 className="text-xl font-bold text-gray-900">{user?.name || 'Guest User'}</h3>
+          <p className="text-gray-500 text-sm">{user?.email || 'guest@ethiobuna.com'}</p>
+          <p className="text-gray-400 text-xs mt-1">Member since {user?.createdAt?.split('T')[0] || '2024'}</p>
         </div>
 
         <div className="space-y-3">
           <div className="bg-gray-50 rounded-lg p-3">
             <label className="text-xs text-gray-500">Full Name</label>
-            <p className="text-gray-900 font-medium">Guest User</p>
+            <p className="text-gray-900 font-medium">{user?.name || 'Guest User'}</p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3">
             <label className="text-xs text-gray-500">Email</label>
-            <p className="text-gray-900 font-medium">guest@ethiobuna.com</p>
+            <p className="text-gray-900 font-medium">{user?.email || 'guest@ethiobuna.com'}</p>
           </div>
           <div className="bg-gray-50 rounded-lg p-3">
-            <label className="text-xs text-gray-500">Phone</label>
-            <p className="text-gray-900 font-medium">+251-XXX-XXXXXX</p>
+            <label className="text-xs text-gray-500">Role</label>
+            <p className="text-gray-900 font-medium capitalize">{user?.role || 'Guest'}</p>
           </div>
         </div>
 
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="btn-primary w-full"
-        >
-          Edit Profile
-        </motion.button>
+        {isAuthenticated && (
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="btn-primary w-full"
+            onClick={() => {
+              // Edit profile functionality
+            }}
+          >
+            Edit Profile
+          </motion.button>
+        )}
       </div>
     </>
   );

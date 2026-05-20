@@ -6,6 +6,11 @@ import { AuthProvider } from './context/AuthContext';
 import { MenuProvider } from './context/MenuContext';
 import CustomerMenu from './pages/customer/CustomerMenu';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import LoginPage from './pages/auth/LoginPage';
+import SignupPage from './pages/auth/SignupPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
 
 const queryClient = new QueryClient();
 
@@ -22,9 +27,21 @@ function App() {
           >
             <Toaster position="top-right" />
             <Routes>
+              {/* Public routes */}
               <Route path="/" element={<CustomerMenu />} />
               <Route path="/menu" element={<CustomerMenu />} />
-              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              <Route path="/reset-password" element={<ResetPasswordPage />} />
+              
+              {/* Protected admin routes */}
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } />
+              
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </Router>

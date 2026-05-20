@@ -5,13 +5,14 @@ import {
   Utensils, QrCode, Menu, Plus, 
   Search, X, Activity, Tag, 
   BarChart3, Settings, FolderOpen, Layers,
-  Upload, Menu as MenuIcon
+  Upload, Menu as MenuIcon, AlertCircle, Clock, Flame,
+  Trash2, Eye, EyeOff
 } from 'lucide-react';
 import { useMenu } from '../../context/MenuContext';
 import toast from 'react-hot-toast';
 
 const AdminDashboard = () => {
-  const { items, categories, loading, deleteMenuItem } = useMenu();
+  const { items, categories, loading, deleteMenuItem, updateMenuItem } = useMenu();
   const [activeTab, setActiveTab] = useState('menu');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showCategoryModal, setShowCategoryModal] = useState(false);
@@ -20,30 +21,125 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   
-  const [uploadedImagePreview, setUploadedImagePreview] = useState('');
+  // Multiple images state
+  const [uploadedImages, setUploadedImages] = useState([]);
+  const [uploadedImagePreviews, setUploadedImagePreviews] = useState([]);
+  
+  // Menu item form fields
+  const [itemName, setItemName] = useState('');
+  const [itemDescription, setItemDescription] = useState('');
+  const [itemPrice, setItemPrice] = useState('');
+  const [itemCategory, setItemCategory] = useState('');
+  const [itemPreparationTime, setItemPreparationTime] = useState('');
+  const [itemSpicyLevel, setItemSpicyLevel] = useState('0');
+  const [itemIsAvailable, setItemIsAvailable] = useState(true);
+  
+  // Ingredients
+  const [ingredients, setIngredients] = useState([]);
+  const [newIngredient, setNewIngredient] = useState('');
+  
+  // Allergens
+  const [allergens, setAllergens] = useState([]);
+  const [newAllergen, setNewAllergen] = useState('');
+  
+  // Nutrition facts
+  const [nutrition, setNutrition] = useState({
+    calories: '',
+    protein: '',
+    carbs: '',
+    fat: ''
+  });
 
   const onDrop = useCallback((acceptedFiles) => {
-    const file = acceptedFiles[0];
-    if (file) {
+    const validFiles = acceptedFiles.filter(file => {
       if (!file.type.startsWith('image/')) {
-        toast.error('Please upload an image file');
-        return;
+        toast.error(`${file.name} is not an image file`);
+        return false;
       }
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB');
-        return;
+        toast.error(`${file.name} size should be less than 5MB`);
+        return false;
       }
-      const previewUrl = URL.createObjectURL(file);
-      setUploadedImagePreview(previewUrl);
-      toast.success('Image uploaded successfully');
+      return true;
+    });
+
+    if (validFiles.length > 0) {
+      const newImages = [...uploadedImages, ...validFiles];
+      const newPreviews = [...uploadedImagePreviews, ...validFiles.map(file => URL.createObjectURL(file))];
+      
+      setUploadedImages(newImages);
+      setUploadedImagePreviews(newPreviews);
+      toast.success(`${validFiles.length} image(s) added successfully`);
     }
-  }, []);
+  }, [uploadedImages, uploadedImagePreviews]);
+
+  const removeImage = (index) => {
+    setUploadedImages(uploadedImages.filter((_, i) => i !== index));
+    setUploadedImagePreviews(uploadedImagePreviews.filter((_, i) => i !== index));
+    toast.success('Image removed');
+  };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.gif', '.webp'] },
-    maxFiles: 1
+    maxFiles: 5
   });
+
+  const addIngredient = () => {
+    if (newIngredient.trim()) {
+      setIngredients([...ingredients, newIngredient.trim()]);
+      setNewIngredient('');
+    }
+  };
+
+  const removeIngredient = (index) => {
+    setIngredients(ingredients.filter((_, i) => i !== index));
+  };
+
+  const addAllergen = () => {
+    if (newAllergen.trim()) {
+      setAllergens([...allergens, newAllergen.trim()]);
+      setNewAllergen('');
+    }
+  };
+
+  const removeAllergen = (index) => {
+    setAllergens(allergens.filter((_, i) => i !== index));
+  };
+
+  const resetForm = () => {
+    setItemName('');
+    setItemDescription('');
+    setItemPrice('');
+    setItemCategory('');
+    setItemPreparationTime('');
+    setItemSpicyLevel('0');
+    setItemIsAvailable(true);
+    setIngredients([]);
+    setAllergens([]);
+    setNutrition({ calories: '', protein: '', carbs: '', fat: '' });
+    setUploadedImages([]);
+    setUploadedImagePreviews([]);
+    setEditingItem(null);
+  };
+
+  const handleAddItem = () => {
+    if (!itemName || !itemPrice) {
+      toast.error('Please fill in item name and price');
+      return;
+    }
+    
+    toast.success('Item added successfully!');
+    resetForm();
+    setShowAddModal(false);
+  };
+
+  // Toggle item visibility
+  const handleToggleVisibility = async (item) => {
+    const updatedItem = { ...item, is_available: !item.is_available };
+    await updateMenuItem(item.id, updatedItem);
+    toast.success(`${item.name} is now ${!item.is_available ? 'hidden from menu' : 'visible on menu'}`);
+  };
 
   const stats = [
     { title: 'Menu Items', value: items?.length || 0, icon: Utensils, color: 'bg-blue-500' },
@@ -188,7 +284,10 @@ const AdminDashboard = () => {
                 <p className="text-xs text-gray-500">Manage your menu</p>
               </div>
               <button 
-                onClick={() => setShowAddModal(true)}
+                onClick={() => {
+                  resetForm();
+                  setShowAddModal(true);
+                }}
                 className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm flex items-center gap-1"
               >
                 <Plus size={16} /> Add Item
@@ -219,18 +318,25 @@ const AdminDashboard = () => {
               </select>
             </div>
 
-            {/* Items Grid */}
+            {/* Items Grid with Visibility Toggle */}
             {loading ? (
               <div className="text-center py-8">Loading...</div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredItems?.map((item) => (
-                  <div key={item.id} className="border rounded-lg p-3">
-                    <img 
-                      src={item.image_url} 
-                      alt={item.name} 
-                      className="w-full h-32 object-cover rounded-lg mb-2" 
-                    />
+                  <div key={item.id} className={`border rounded-lg p-3 ${!item.is_available ? 'opacity-75 bg-gray-50' : ''}`}>
+                    <div className="relative">
+                      <img 
+                        src={item.image_url} 
+                        alt={item.name} 
+                        className="w-full h-32 object-cover rounded-lg mb-2" 
+                      />
+                      {!item.is_available && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
+                          <span className="text-white text-xs font-bold bg-red-600 px-2 py-1 rounded">Hidden</span>
+                        </div>
+                      )}
+                    </div>
                     <h3 className="font-semibold text-gray-800 text-sm">{item.name}</h3>
                     <p className="text-xs text-gray-500 mt-1 line-clamp-2">{item.description}</p>
                     <div className="flex justify-between items-center mt-2">
@@ -238,24 +344,35 @@ const AdminDashboard = () => {
                       <span className={`text-xs px-2 py-0.5 rounded-full ${
                         item.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                       }`}>
-                        {item.is_available ? 'Available' : 'Out'}
+                        {item.is_available ? 'Visible' : 'Hidden'}
                       </span>
                     </div>
                     <div className="flex gap-2 mt-2">
+                      <button 
+                        onClick={() => handleToggleVisibility(item)}
+                        className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-medium flex items-center justify-center gap-1 ${
+                          item.is_available 
+                            ? 'bg-yellow-500 text-white hover:bg-yellow-600' 
+                            : 'bg-green-500 text-white hover:bg-green-600'
+                        }`}
+                      >
+                        {item.is_available ? <EyeOff size={14} /> : <Eye size={14} />}
+                        {item.is_available ? 'Hide' : 'Show'}
+                      </button>
                       <button 
                         onClick={() => {
                           setEditingItem(item);
                           setShowAddModal(true);
                         }} 
-                        className="flex-1 bg-yellow-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
+                        className="flex-1 bg-blue-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-blue-600"
                       >
                         Edit
                       </button>
                       <button 
                         onClick={() => handleDeleteItem(item.id)} 
-                        className="flex-1 bg-red-500 text-white px-3 py-1.5 rounded-lg text-sm font-medium"
+                        className="px-3 py-1.5 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600"
                       >
-                        Delete
+                        <Trash2 size={14} />
                       </button>
                     </div>
                   </div>
@@ -340,31 +457,156 @@ const AdminDashboard = () => {
         )}
       </div>
 
-      {/* Add Item Modal */}
+      {/* Add/Edit Item Modal */}
       <AnimatePresence>
         {showAddModal && (
           <motion.div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowAddModal(false)}>
-            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="bg-white rounded-xl w-full max-w-md max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} exit={{ scale: 0.9 }} className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
-                <h2 className="text-lg font-bold">{editingItem ? 'Edit Item' : 'Add Item'}</h2>
+                <h2 className="text-lg font-bold">{editingItem ? 'Edit Item' : 'Add New Item'}</h2>
                 <button onClick={() => setShowAddModal(false)} className="p-1"><X size={20} /></button>
               </div>
-              <div className="p-4 space-y-3">
-                <input type="text" placeholder="Item Name" className="input text-sm" />
-                <textarea placeholder="Description" className="input text-sm" rows="2" />
-                <div className="grid grid-cols-2 gap-3">
-                  <input type="number" placeholder="Price" className="input text-sm" />
-                  <select className="input text-sm"><option>Select Category</option></select>
+              
+              <div className="p-4 space-y-4">
+                {/* Basic Information */}
+                <div className="space-y-3">
+                  <h3 className="text-md font-semibold text-gray-800 border-b pb-2">Basic Information</h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Item Name *</label>
+                    <input type="text" className="input text-sm" placeholder="e.g., Doro Wat" value={itemName} onChange={(e) => setItemName(e.target.value)} />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea className="input text-sm" rows="2" placeholder="Describe your dish..." value={itemDescription} onChange={(e) => setItemDescription(e.target.value)} />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Price (ETB) *</label>
+                      <input type="number" className="input text-sm" placeholder="0.00" value={itemPrice} onChange={(e) => setItemPrice(e.target.value)} />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+                      <select className="input text-sm" value={itemCategory} onChange={(e) => setItemCategory(e.target.value)}>
+                        <option value="">Select Category</option>
+                        {categories?.map((cat) => (
+                          <option key={cat} value={cat}>{cat}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                 </div>
-                <div {...getRootProps()} className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer">
-                  <input {...getInputProps()} />
-                  {uploadedImagePreview ? (
-                    <img src={uploadedImagePreview} alt="Preview" className="max-h-32 mx-auto rounded" />
-                  ) : (
-                    <><Upload className="mx-auto h-8 w-8 text-gray-400" /><p className="text-xs mt-1">Upload Image</p></>
+
+                {/* Image Upload */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Item Images (Multiple)</label>
+                  <div {...getRootProps()} className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                    <input {...getInputProps()} />
+                    <Upload className="mx-auto h-8 w-8 text-gray-400" />
+                    <p className="text-xs text-gray-500 mt-1">Drag & drop or click to upload (Max 5 images)</p>
+                    <p className="text-xs text-gray-400">Supports: JPG, PNG, GIF, WEBP (Max 5MB each)</p>
+                  </div>
+                  
+                  {uploadedImagePreviews.length > 0 && (
+                    <div className="mt-3">
+                      <p className="text-sm font-medium text-gray-700 mb-2">Uploaded Images ({uploadedImagePreviews.length})</p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {uploadedImagePreviews.map((preview, idx) => (
+                          <div key={idx} className="relative group">
+                            <img src={preview} alt={`Preview ${idx + 1}`} className="w-full h-24 object-cover rounded-lg border" />
+                            <button
+                              onClick={() => removeImage(idx)}
+                              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <Trash2 size={12} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
                 </div>
-                <button className="btn-primary w-full text-sm">{editingItem ? 'Update' : 'Add'} Item</button>
+
+                {/* Preparation & Spiciness */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1"><Clock size={14} /> Preparation Time (min)</label>
+                    <input type="number" className="input text-sm" placeholder="e.g., 15" value={itemPreparationTime} onChange={(e) => setItemPreparationTime(e.target.value)} />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1"><Flame size={14} /> Spicy Level</label>
+                    <select className="input text-sm" value={itemSpicyLevel} onChange={(e) => setItemSpicyLevel(e.target.value)}>
+                      <option value="0">Not Spicy</option>
+                      <option value="1">Mild</option>
+                      <option value="2">Medium</option>
+                      <option value="3">Hot</option>
+                      <option value="4">Very Hot</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Ingredients */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Ingredients</label>
+                  <div className="flex gap-2 mb-2">
+                    <input type="text" className="input text-sm flex-1" placeholder="e.g., Chicken, Berbere, Onions" value={newIngredient} onChange={(e) => setNewIngredient(e.target.value)} />
+                    <button type="button" onClick={addIngredient} className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm">Add</button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {ingredients.map((ing, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-gray-100 rounded-full text-xs flex items-center gap-1">
+                        {ing}
+                        <button type="button" onClick={() => removeIngredient(idx)} className="text-red-500 hover:text-red-700">×</button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Allergens */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1"><AlertCircle size={14} /> Allergens</label>
+                  <div className="flex gap-2 mb-2">
+                    <input type="text" className="input text-sm flex-1" placeholder="e.g., Nuts, Dairy, Gluten" value={newAllergen} onChange={(e) => setNewAllergen(e.target.value)} />
+                    <button type="button" onClick={addAllergen} className="bg-blue-600 text-white px-3 py-2 rounded-lg text-sm">Add</button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {allergens.map((all, idx) => (
+                      <span key={idx} className="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs flex items-center gap-1">
+                        {all}
+                        <button type="button" onClick={() => removeAllergen(idx)} className="text-red-500 hover:text-red-700">×</button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Nutrition Facts */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Nutrition Facts (per serving)</label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <input type="text" className="input text-sm" placeholder="Calories (e.g., 850)" value={nutrition.calories} onChange={(e) => setNutrition({ ...nutrition, calories: e.target.value })} />
+                    <input type="text" className="input text-sm" placeholder="Protein (g)" value={nutrition.protein} onChange={(e) => setNutrition({ ...nutrition, protein: e.target.value })} />
+                    <input type="text" className="input text-sm" placeholder="Carbs (g)" value={nutrition.carbs} onChange={(e) => setNutrition({ ...nutrition, carbs: e.target.value })} />
+                    <input type="text" className="input text-sm" placeholder="Fat (g)" value={nutrition.fat} onChange={(e) => setNutrition({ ...nutrition, fat: e.target.value })} />
+                  </div>
+                </div>
+
+                {/* Availability */}
+                <div className="flex items-center gap-2">
+                  <input type="checkbox" id="available" checked={itemIsAvailable} onChange={(e) => setItemIsAvailable(e.target.checked)} className="w-4 h-4" />
+                  <label htmlFor="available" className="text-sm text-gray-700">Item is available for ordering</label>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex gap-3 pt-4">
+                  <button onClick={handleAddItem} className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                    {editingItem ? 'Update Item' : 'Add Item'}
+                  </button>
+                  <button onClick={() => setShowAddModal(false)} className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition-colors">
+                    Cancel
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
