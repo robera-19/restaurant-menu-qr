@@ -4,12 +4,19 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  server: {
-    port: 3000, 
-  },
   resolve: {
     alias: {
-       "@ethio-buna/shared": path.resolve(__dirname, "../../packages/shared/index.js"),
+      '@ethio-buna/shared': path.resolve(
+        __dirname,
+        '../../packages/shared/index.js',
+      ),
+    },
+  },
+
+  server: {
+    port: 3000,
+    fs: {
+      allow: ['..', '../../packages/shared', '../../node_modules'],
     },
   },
 });
