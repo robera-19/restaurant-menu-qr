@@ -1,36 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { ratingService } from '../../services/ratingService';
 import AdminLayout from '../../../../admin/src/components/AdminLayout';
+import { useRatings } from '../../../hooks/useRatings';
 import { Star, User, MessageSquare, Calendar, Loader2 } from 'lucide-react';
 
 const Ratings = () => {
-  const [feedbacks, setFeedbacks] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const loadFeedbacks = async () => {
-      try {
-        setLoading(true);
-
-        const res = await ratingService.getAdminFeedback('/ratings/admin/all');
-
-        const payload = res?.data;
-
-        // normalize API response safely
-        const finalData = payload?.data ?? payload ?? [];
-
-        setFeedbacks(Array.isArray(finalData) ? finalData : []);
-      } catch (err) {
-        console.error('Failed to load feedback', err);
-        setFeedbacks([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadFeedbacks();
-  }, []);
-
+  const { data: feedbacks = [], isLoading: loading } = useRatings();
   return (
     <AdminLayout title="Customer Reviews">
       <div className="max-w-6xl mx-auto space-y-6 animate-in fade-in duration-500">

@@ -1,51 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { qrService } from '../../services/qrService';
 import { QrCode as QrIcon, Loader2 } from 'lucide-react';
 import AdminLayout from '../../components/AdminLayout';
+import { useQR } from '../../../hooks/useQR';
 import toast from 'react-hot-toast';
 
 export default function QRManagement() {
-  const [qrs, setQrs] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { qrs, loading, refetch } = useQR();
   const [name, setName] = useState('');
-
-  const loadQrs = async () => {
-    try {
-      setLoading(true);
-
-      const result = await qrService.getAll();
-
-      console.log('QR Response:', result);
-
-      // Handle different backend response shapes
-      if (Array.isArray(result)) {
-        setQrs(result);
-      } else if (Array.isArray(result.data)) {
-        setQrs(result.data);
-      } else {
-        setQrs([]);
-        console.warn('Unexpected response:', result);
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Error syncing QR data');
-      setQrs([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadQrs();
-  }, []);
 
   const handleCreate = async (e) => {
     e.preventDefault();
+
     try {
       await qrService.create({ name });
+
       toast.success('New Entry Created');
       setName('');
-      loadQrs();
+
+      refetch(); // 🔥 refresh data instantly
     } catch (err) {
       toast.error('Generation failed');
     }
@@ -71,15 +44,18 @@ export default function QRManagement() {
           <h2 className="text-xl font-bold mb-6 text-slate-800 uppercase tracking-tight">
             Generate Dynamic QR
           </h2>
-          <form onSubmit={handleCreate} className="flex gap-4">
+          <form
+            onSubmit={handleCreate}
+            className="flex flex-col sm:flex-row gap-4"
+          >
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Location name (e.g. Entrance, VIP-01...)"
-              className="flex-1 p-4 bg-slate-50 border-none rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-orange-500 transition-all"
+              placeholder="Location name (e.g. Table 1, VIP-01...)"
+              className="w-full flex-1 p-4 bg-slate-50 border-none rounded-2xl outline-none ring-1 ring-slate-200 focus:ring-2 focus:ring-orange-500 transition-all"
               required
             />
-            <button className="bg-orange-600 text-white px-10 rounded-2xl font-black hover:bg-orange-700 shadow-lg shadow-orange-600/20 transition-all">
+            <button className="w-full sm:w-auto bg-orange-600 text-white px-6 sm:px-10 py-4 rounded-2xl font-black hover:bg-orange-700 shadow-lg shadow-orange-600/20 transition-all">
               GENERATE
             </button>
           </form>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// import { useMenu } from '../../context/MenuContext';
+import { useOverview } from '../../../hooks/useOverview';
 import {
   Utensils,
   Tag,
@@ -17,37 +17,9 @@ import AdminLayout from '../../components/AdminLayout';
 import { analyticsService } from '../../services/analyticsService';
 
 const AdminDashboard = () => {
-  // 1. Local State for live analytics
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading, error } = useOverview();
 
-  // 2. Fetch Live Data
-  useEffect(() => {
-    const fetchOverview = async () => {
-      try {
-        const res = await analyticsService.getOverview();
-
-        if (res?.success) {
-          setData(res.data);
-        } else if (res?.data?.success) {
-          setData(res.data.data);
-        } else if (res?.data) {
-          setData(res.data);
-        } else {
-          console.log('Unexpected response:', res);
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOverview();
-  }, []);
-
-  // 3. Loading View
-  if (loading) {
+  if (isLoading) {
     return (
       <AdminLayout title="Operational Overview">
         <div className="h-96 flex flex-col items-center justify-center space-y-4">
@@ -60,7 +32,7 @@ const AdminDashboard = () => {
     );
   }
 
-  // 4. Map real data to KPI cards
+  //  Map real data to KPI cards
   const stats = [
     {
       label: "Today's Scans",
@@ -96,7 +68,7 @@ const AdminDashboard = () => {
     <AdminLayout title="Operational Overview">
       <div className="space-y-10 animate-in fade-in duration-700">
         {/* KPI SECTION */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {stats.map((stat, i) => (
             <div
               key={i}
