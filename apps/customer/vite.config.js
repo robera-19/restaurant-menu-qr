@@ -16,6 +16,7 @@ export default defineConfig({
         __dirname,
         '../../packages/shared/index.js',
       ),
+      '/packages/shared': path.resolve(__dirname, '../../packages/shared'),
     },
   },
   server: {
