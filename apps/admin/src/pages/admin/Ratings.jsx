@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ratingService } from '../../services/ratingService';
-import AdminLayout from '../../../../admin/src/components/AdminLayout';
+import AdminLayout from '../../components/AdminLayout';
 import { useRatings } from '../../../hooks/useRatings';
 import { Star, User, MessageSquare, Calendar, Loader2 } from 'lucide-react';
 
