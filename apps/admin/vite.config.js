@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@ethio-buna/shared': path.resolve(__dirname, '../../packages/shared/index.js'),
+      '@ethio-buna/shared': path.resolve(__dirname, '../../packages/shared'),
     },
   },
   server: {
