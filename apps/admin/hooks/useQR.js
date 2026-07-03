@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { qrService } from '../../admin/src/services/qrService';
+import { qrService } from '../src/services/qrService';
 
 export const useQR = () => {
   const query = useQuery({
