@@ -42,8 +42,9 @@ const CustomerMenu = () => {
           categoryService.getAll(),
         ]);
 
-        const itemsArray = Array.isArray(menuRes.data) ? menuRes.data : [];
-        const catsArray = Array.isArray(categoryRes.data)
+        const itemsArray = Array.isArray(menuRes?.data) ? menuRes.data : [];
+
+        const catsArray = Array.isArray(categoryRes?.data)
           ? categoryRes.data
           : [];
         setMenu(itemsArray);
