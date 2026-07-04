@@ -25,10 +25,8 @@ const CustomerMenu = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [ratingItem, setRatingItem] = useState(null);
 
-  // Ref to prevent double-fetching in React Strict Mode
   const hasFetched = useRef(false);
 
-  // --- 1. DATA INITIALIZATION ---
   useEffect(() => {
     const init = async () => {
       // Prevent unnecessary calls
