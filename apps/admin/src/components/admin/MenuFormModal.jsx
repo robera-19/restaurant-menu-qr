@@ -79,6 +79,23 @@ const MenuFormModal = ({ editItem, onClose }) => {
     setPreviewUrls((prev) => [...prev, ...newUrls]);
   };
 
+  // ---: REORDERING LOGIC ---
+  const moveImage = (index, direction) => {
+    const newIndex = direction === 'left' ? index - 1 : index + 1;
+
+    // Prevent moving out of bounds
+    if (newIndex < 0 || newIndex >= previewUrls.length) return;
+
+    const swap = (arr) => {
+      const updated = [...arr];
+      [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
+      return updated;
+    };
+
+    setPreviewUrls(swap(previewUrls));
+    setSelectedFiles(swap(selectedFiles));
+  };
+
   const removeImage = (index) => {
     if (previewUrls[index]?.startsWith('blob:')) {
       URL.revokeObjectURL(previewUrls[index]);
@@ -319,7 +336,97 @@ const MenuFormModal = ({ editItem, onClose }) => {
               </div>
             </div>
 
-            {/* Description */}
+            {/* SECTION 2: Dish Images */}
+            <div className="bg-slate-50 rounded-3xl p-6 space-y-5">
+              <h3 className="font-black text-slate-700 text-sm uppercase tracking-wider flex items-center gap-2">
+                <Camera size={16} /> Dish Images
+              </h3>
+
+              {/* Hidden Input with Capture Attribute */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+              />
+
+              {/* Interaction Zone */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="
+      border-4 
+      border-dashed 
+      border-slate-200 
+      rounded-[2.5rem] 
+      p-10 
+      text-center 
+      cursor-pointer 
+      hover:border-orange-500 
+      hover:bg-orange-50/50 
+      transition-all 
+      group
+    "
+              >
+                <div className="space-y-4">
+                  <div
+                    className="
+          w-16 h-16 
+          bg-orange-100 
+          text-orange-600 
+          rounded-2xl 
+          flex 
+          items-center 
+          justify-center 
+          mx-auto 
+          group-hover:bg-orange-600 
+          group-hover:text-white 
+          transition-all
+        "
+                  >
+                    <Camera size={32} />
+                  </div>
+
+                  <div>
+                    <h4 className="font-black text-slate-800 uppercase tracking-tight">
+                      Capture or Upload
+                    </h4>
+                    <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
+                      Tap to open camera or browse gallery
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Image Previews remain the same logic as before */}
+              {previewUrls.length > 0 && (
+                <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+                  {previewUrls.map((img, i) => (
+                    <div
+                      key={i}
+                      className="relative shrink-0 animate-in zoom-in"
+                    >
+                      <img
+                        src={img}
+                        alt="Dish preview"
+                        className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeImage(i)}
+                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-lg"
+                      >
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* SECTION 3: Description */}
             <div className="space-y-2">
               <label className="text-xs font-bold uppercase tracking-wide text-slate-500">
                 Description
@@ -335,7 +442,7 @@ const MenuFormModal = ({ editItem, onClose }) => {
             </div>
           </div>
 
-          {/* SECTION 2: Nutrition Facts */}
+          {/* SECTION 4: Nutrition Facts */}
           <div className="bg-slate-50 rounded-3xl p-6 space-y-5">
             <h3 className="font-black text-slate-700 text-sm uppercase tracking-wider">
               Nutrition Facts
@@ -396,7 +503,7 @@ const MenuFormModal = ({ editItem, onClose }) => {
             </div>
           </div>
 
-          {/* SECTION 3: Ingredients & Allergens */}
+          {/* SECTION 5: Ingredients & Allergens */}
           <div className="bg-slate-50 rounded-3xl p-6 space-y-5">
             <h3 className="font-black text-slate-700 text-sm uppercase tracking-wider">
               Ingredients & Allergens
@@ -419,60 +526,7 @@ const MenuFormModal = ({ editItem, onClose }) => {
             />
           </div>
 
-          {/* SECTION 4: Dish Images */}
-          <div className="bg-slate-50 rounded-3xl p-6 space-y-5">
-            <h3 className="font-black text-slate-700 text-sm uppercase tracking-wider">
-              Dish Images
-            </h3>
-
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => handleFiles(e.target.files)}
-            />
-
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              onDrop={(e) => {
-                e.preventDefault();
-                handleFiles(e.dataTransfer.files);
-              }}
-              onDragOver={(e) => e.preventDefault()}
-              className="border-2 border-dashed border-slate-300 rounded-3xl p-10 text-center cursor-pointer hover:border-orange-500 hover:bg-orange-50 transition-all"
-            >
-              <Camera className="mx-auto text-orange-500 mb-3" size={40} />
-              <h4 className="font-bold text-slate-700">Upload Dish Photos</h4>
-              <p className="text-sm text-slate-400 mt-1">
-                Drag & drop images or click to browse
-              </p>
-            </div>
-
-            {previewUrls.length > 0 && (
-              <div className="flex gap-4 overflow-x-auto pb-2">
-                {previewUrls.map((img, i) => (
-                  <div key={i} className="relative shrink-0">
-                    <img
-                      src={img}
-                      alt="Dish preview"
-                      className="w-28 h-28 rounded-2xl object-cover border"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeImage(i)}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition"
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* SECTION 5: Status Switches */}
+          {/* SECTION 6: Status Switches */}
           <div className="flex flex-wrap gap-4">
             <label className="flex items-center gap-3 bg-slate-50 rounded-2xl px-5 py-4 cursor-pointer hover:bg-slate-100 transition">
               <input
