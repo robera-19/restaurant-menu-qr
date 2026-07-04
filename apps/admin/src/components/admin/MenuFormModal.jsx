@@ -11,6 +11,7 @@ const MenuFormModal = ({ editItem, onClose }) => {
   const [errors, setErrors] = useState({});
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [previewUrls, setPreviewUrls] = useState([]);
+  const cameraInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -342,20 +343,28 @@ const MenuFormModal = ({ editItem, onClose }) => {
                 <Camera size={16} /> Dish Images
               </h3>
 
-              {/* Hidden Input with Capture Attribute */}
+              {/* Camera Input */}
               <input
-                ref={fileInputRef}
+                ref={cameraInputRef}
                 type="file"
-                multiple
                 accept="image/*"
                 capture="environment"
                 className="hidden"
                 onChange={(e) => handleFiles(e.target.files)}
               />
 
-              {/* Interaction Zone */}
+              {/* Gallery Input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+              />
+
+              {/* MAIN UPLOAD ZONE (kept original style) */}
               <div
-                onClick={() => fileInputRef.current?.click()}
                 className="
       border-4 
       border-dashed 
@@ -370,7 +379,8 @@ const MenuFormModal = ({ editItem, onClose }) => {
       group
     "
               >
-                <div className="space-y-4">
+                <div className="space-y-5">
+                  {/* Icon */}
                   <div
                     className="
           w-16 h-16 
@@ -389,39 +399,91 @@ const MenuFormModal = ({ editItem, onClose }) => {
                     <Camera size={32} />
                   </div>
 
+                  {/* Text */}
                   <div>
                     <h4 className="font-black text-slate-800 uppercase tracking-tight">
                       Capture or Upload
                     </h4>
                     <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">
-                      Tap to open camera or browse gallery
+                      Tap camera or browse gallery
                     </p>
+                  </div>
+
+                  {/* ACTION BUTTONS */}
+                  <div className="flex gap-3 justify-center mt-4">
+                    {/* Camera Button */}
+                    <button
+                      type="button"
+                      onClick={() => cameraInputRef.current?.click()}
+                      className="
+            px-5 py-2.5 
+            bg-orange-600 
+            hover:bg-orange-700 
+            text-white 
+            rounded-xl 
+            font-bold 
+            text-sm 
+            transition
+          "
+                    >
+                      📷 Camera
+                    </button>
+
+                    {/* Gallery Button */}
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="
+            px-5 py-2.5 
+            bg-slate-200 
+            hover:bg-slate-300 
+            text-slate-800 
+            rounded-xl 
+            font-bold 
+            text-sm 
+            transition
+          "
+                    >
+                      🖼️ Gallery
+                    </button>
                   </div>
                 </div>
               </div>
 
-              {/* Image Previews remain the same logic as before */}
+              {/* IMAGE PREVIEWS (unchanged logic, polished layout) */}
               {previewUrls.length > 0 && (
-                <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
-                  {previewUrls.map((img, i) => (
-                    <div
-                      key={i}
-                      className="relative shrink-0 animate-in zoom-in"
-                    >
-                      <img
-                        src={img}
-                        alt="Dish preview"
-                        className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImage(i)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-lg"
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  ))}
+                <div className="space-y-3">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    Selected Images
+                  </p>
+
+                  <div className="flex gap-4 overflow-x-auto pb-2 no-scrollbar">
+                    {previewUrls.map((img, i) => (
+                      <div key={i} className="relative shrink-0 group">
+                        <img
+                          src={img}
+                          alt="Dish preview"
+                          className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-md group-hover:scale-105 transition"
+                        />
+
+                        <button
+                          type="button"
+                          onClick={() => removeImage(i)}
+                          className="
+                absolute -top-2 -right-2 
+                bg-red-500 hover:bg-red-600 
+                text-white 
+                rounded-full 
+                p-1.5 
+                shadow-lg 
+                transition
+              "
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
