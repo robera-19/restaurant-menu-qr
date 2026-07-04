@@ -2,6 +2,7 @@
   "name": "admin-dashboard",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@ethio-buna/shared": "file:../../packages/shared",
     "@headlessui/react": "^1.7.0",
