@@ -87,7 +87,7 @@ const ItemDetailModal = ({ item, onClose, onRate }) => {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.8 }}
-              className="w-full h-full object-cover"
+              className="h-40 md:h-52 w-full object-cover rounded-3xl"
               alt={item.name}
             />
           </AnimatePresence>
@@ -154,9 +154,9 @@ const ItemDetailModal = ({ item, onClose, onRate }) => {
           {/* Main Identity */}
           <div className="flex justify-between items-start gap-4">
             <div className="space-y-2">
-              <h2 className="text-3xl md:text-4xl font-black text-slate-900 leading-tight uppercase tracking-tighter">
+              <h3 className="font-black text-base leading-tight line-clamp-2 min-h-[2.8rem] uppercase tracking-widest">
                 {item.name}
-              </h2>
+              </h3>
               <div className="flex flex-wrap gap-4 items-center">
                 <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-full text-[10px] font-black text-slate-500 uppercase tracking-widest">
                   <Clock size={14} /> {item.preparationTime || '0'} MINS
@@ -194,8 +194,8 @@ const ItemDetailModal = ({ item, onClose, onRate }) => {
 
           {/* Description */}
           <div className="space-y-4">
-            <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-2">
-              <Info size={14} /> The Story
+            <h4 className="text-xs font-black text-slate-500 tracking-[0.3em] flex items-center gap-2 line-clamp-1">
+              <Info size={14} /> Description
             </h4>
             <p className="text-slate-600 leading-relaxed font-medium text-lg italic border-l-4 border-orange-100 pl-6 py-2">
               "{item.description || 'Our signature dish prepared with passion.'}
